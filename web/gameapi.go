@@ -93,8 +93,8 @@ func (self *GameApi)startHttpServer(port string) *http.Server {
         rstr,err:=mqrpc.String(
             self.Call(
             context.Background(),
-            "auth",
-            "/logout",
+            "gate-apisvc",
+            "/gateinfo/load",
             mqrpc.Param(r.Form.Get("token")),
             ),
         )

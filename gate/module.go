@@ -1,4 +1,4 @@
-package mgate
+package gate
 
 import (
     "github.com/liangdas/mqant/conf"

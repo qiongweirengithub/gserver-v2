@@ -42,11 +42,13 @@ func main() {
 		helloworld.Module(),
 		web.Module(),
 		rpctest.Module(),
-		mgate.Module(),
+		gate.Module(),
 
 		// 业务相关
 		auth.Module(),
 		web.ApiModule(),
+		gate.ApiSvcModule(),
+		
 	)
 	if err != nil {
 		log.Error(err.Error())

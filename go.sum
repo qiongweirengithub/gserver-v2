@@ -103,8 +103,6 @@ github.com/liangdas/mqant v1.3.92 h1:eGagpWASfUordsYJkWP+HTs01kkeGtCAcFoZyj/JwIU
 github.com/liangdas/mqant v1.3.92/go.mod h1:CVUjpJez2aFMVsbcP3NJdedxobY8RIXB9gaP41LJKto=
 github.com/liangdas/mqant-modules v1.2.1 h1:HXladbsb9fOllk7dE4rhJMmKcnhdbiwbQ6Gc+tLfvGg=
 github.com/liangdas/mqant-modules v1.2.1/go.mod h1:OadvLghzeXabACyO3bACDK0tjd9Vt5vs7vz9AfQJaUY=
-github.com/liangdas/mqant-modules v1.3.5 h1:SWhbkboYXQ3pxbrb7CF28Qkwl4BxOWRPfSs1xZZPzOs=
-github.com/liangdas/mqant-modules v1.3.5/go.mod h1:OadvLghzeXabACyO3bACDK0tjd9Vt5vs7vz9AfQJaUY=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-isatty v0.0.3/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNxMWT7Zi4=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=

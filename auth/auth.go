@@ -60,8 +60,8 @@ func (self *Auth) login(name string, pwd string) (r string, err error) {
 	return fmt.Sprintf("hi %v login", name), nil
 }
 
-func (self *Auth) logout(name string, pwd string) (r string, err error) {
-	return fmt.Sprintf("hi %v logout", name), nil
+func (self *Auth) logout(token string) (r string, err error) {
+	return fmt.Sprintf("hi %v logout", token), nil
 }
 
 

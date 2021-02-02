@@ -15,6 +15,7 @@ import (
 	"gserver.v2/rpctest"
 	"gserver.v2/web"
 	"gserver.v2/gate"
+	"gserver.v2/auth"
 )
 
 func main() {
@@ -36,14 +37,16 @@ func main() {
 		module.Nats(nc),     //指定nats rpc
 		module.Registry(rs), //指定服务发现
 	)
-	
+
 	err = app.Run(
 		helloworld.Module(),
 		web.Module(),
 		rpctest.Module(),
 		mgate.Module(),
 
-
+		// 业务相关
+		auth.Module(),
+		web.ApiModule(),
 	)
 	if err != nil {
 		log.Error(err.Error())

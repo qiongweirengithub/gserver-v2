@@ -88,6 +88,21 @@ func (self *GameApi)startHttpServer(port string) *http.Server {
 	})
 	
 
+	http.HandleFunc("/gateinfo/load/", func(w http.ResponseWriter, r *http.Request) {
+        _ = r.ParseForm()
+        rstr,err:=mqrpc.String(
+            self.Call(
+            context.Background(),
+            "auth",
+            "/logout",
+            mqrpc.Param(r.Form.Get("token")),
+            ),
+        )
+        log.Info("RpcCall %v , err %v",rstr,err)
+        _, _ = io.WriteString(w, rstr)
+	})
+
+
     go func() {
         if err := srv.ListenAndServe(); err != nil {
             // cannot panic, because this probably is an intentional close

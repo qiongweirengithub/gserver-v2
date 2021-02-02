@@ -36,12 +36,13 @@ func main() {
 		module.Nats(nc),     //指定nats rpc
 		module.Registry(rs), //指定服务发现
 	)
+	
 	err = app.Run(
 		helloworld.Module(),
 		web.Module(),
 		rpctest.Module(),
 		mgate.Module(),
-		
+
 
 	)
 	if err != nil {

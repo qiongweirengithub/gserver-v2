@@ -16,7 +16,7 @@ package main
 import (
 	"fmt"
 	"github.com/liangdas/armyant/task"
-	"gserver.v2/robot/test"
+	"gserver.v2/robot/authtest"
 	"os"
 	"os/signal"
 )
@@ -24,7 +24,7 @@ import (
 func main() {
 
 	task := task.LoopTask{
-		C: 10000, //并发数
+		C: 10, //并发数
 	}
 	//manager := table_test.NewManager(task) //房间模型的demo
 	manager := test_task.NewManager(task) //gate demo

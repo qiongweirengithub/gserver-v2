@@ -22,9 +22,8 @@ func main() {
 	go func() {
 		http.ListenAndServe("0.0.0.0:6060", nil)
 	}()
-	time := helloworld.H1{Time: "xx"}
-	fmt.Println(time)
-	
+
+	fmt.Println("staring")
 
 	rs := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{"127.0.0.1:8500"}

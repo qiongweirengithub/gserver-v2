@@ -15,6 +15,7 @@ import (
 	"gserver.v2/rpctest"
 	"gserver.v2/web"
 	"gserver.v2/gate"
+	"gserver.v2/game"
 	"gserver.v2/auth"
 )
 
@@ -47,6 +48,11 @@ func main() {
 		auth.Module(),
 		web.ApiModule(),
 		gate.ApiSvcModule(),
+
+
+		// 服务内调用
+		game.ApiSvcModule(),
+
 		
 	)
 	if err != nil {

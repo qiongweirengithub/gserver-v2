@@ -68,7 +68,7 @@ http://gserver.v2/
 }
 ```
 
-### 查询网管信息
+### 查询网关信息
 - uri:     /gateinfo/load
 - param
 

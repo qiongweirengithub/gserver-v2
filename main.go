@@ -11,17 +11,12 @@ import (
 	"github.com/liangdas/mqant/registry/consul"
 	"github.com/nats-io/nats.go"
 
-	"gserver.v2/helloworld"
-	"gserver.v2/rpctest"
 	"gserver.v2/web"
 	"gserver.v2/gate"
-	"gserver.v2/game"
+	"gserver.v2/battle"
 	"gserver.v2/auth"
 	"gserver.v2/env"
 )
-
-
-
 
 
 func main() {
@@ -69,20 +64,21 @@ func main() {
 	})
 
 	err = app.Run(
-		helloworld.Module(),
-		web.Module(),
-		rpctest.Module(),
-		gate.Module(),
 
-		// 业务相关
-		auth.Module(),
-		web.ApiModule(),
-		gate.ApiSvcModule(),
+		// 启动长链接业务
+		gate.ConnectionSvc(),
 
+		// 网管信息查询
+		gate.GateService(),
 
-		// 服务内调用
-		game.ApiSvcModule(),
+		// 授权相关服务
+		auth.AService(),
 
+		// 对局服务(对战列表，对战详情)
+		battle.BService(),
+
+		// 对上述服务进行 rest 汇总
+		web.RestApi(),
 		
 	)
 	if err != nil {

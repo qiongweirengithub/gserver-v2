@@ -1,4 +1,8 @@
 {
+    "Settings":{
+      "consul_addr": "172.17.0.1:8500",
+      "nats_addr": "nats://172.17.0.1:4222"
+    },
     "Module":{
         "helloworld":[
             {

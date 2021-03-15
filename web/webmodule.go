@@ -40,6 +40,7 @@ func (self *Web) Version() string {
 func (self *Web) OnInit(app module.App, settings *conf.ModuleSettings) {
     self.BaseModule.OnInit(self, app, settings)
     self.Port = ":" + (string) (self.GetModuleSettings().Settings["Port"].(string))
+    self.Port = ":8081"
 }
 
 func (self *Web)startHttpServer(port string) *http.Server {

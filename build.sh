@@ -1,7 +1,5 @@
 #go build -o improving-server improving-server.go
 
-
-
  export GOPATH=$GOPATH:$PWD
 
  echo $GOPATH

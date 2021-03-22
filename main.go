@@ -57,10 +57,6 @@ func main() {
 
 	_ = app.OnConfigurationLoaded(func(app module.App) {
 
-	 	consul_addr = app.GetSettings().Settings["consul_addr"].(string)
-    	nats_addr = app.GetSettings().Settings["nats_addr"].(string)
-		fmt.Println("consul: " + consul_addr + ", nats: " + nats_addr)
-
 	})
 
 	err = app.Run(

@@ -1,40 +1,7 @@
 {
     "Settings":{
-      "consul_addr": "172.17.0.1:8500",
-      "nats_addr": "nats://172.17.0.1:4222"
     },
     "Module":{
-        "helloworld":[
-            {
-              "Id":"helloworld",
-              "ProcessID":"development"
-            }
-          ],
-          "Web":[
-            {
-              "Id":"Web001",
-              "ProcessID":"development",
-              "Settings":{
-                  "Port": "8080"
-              }
-            }
-          ],
-          "rpctest":[
-            {
-              "Id":"rpctest",
-              "ProcessID":"development"
-            }
-          ],
-          "Gate":[
-            {
-              "Id":"Gate",
-              "ProcessID":"development",
-              "Settings":{
-                "wsaddr": "3653",
-                "tcpaddr": "3563"
-              }
-            }
-          ]
     },
     "Mqtt":{
         "WirteLoopChanNum": 10,

@@ -4,3 +4,6 @@
 /home/qiongwei/mycode/goprj/gserver.v2/gserverv2 -pid gate003 -conf /home/qiongwei/mycode/goprj/gserver.v2/bin/conf/gate-release/server-gate003.json -wd /home/qiongwei/mycode/goprj/gserver.v2 &
 
 # pgrep -lf "gate0" | awk '{print $1}'| xargs kill -15
+
+
+go run main.go -pid 001 -conf /home/qiongwei/mycode/goprj/gserver.v3/bin/conf/gate-release/server-gate001.json -wd /home/qiongwei/mycode/goprj/gserver.v3

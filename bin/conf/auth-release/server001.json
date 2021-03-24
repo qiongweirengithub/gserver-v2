@@ -1,0 +1,25 @@
+{
+  "Module":{
+        "auth-service":[
+          {
+            "Id":"auth-service",
+            "ID":"auth-service",
+            "ProcessID":"001",
+            "Settings":{
+                "Mysql": "3306"
+            }
+          }
+        ]
+  },
+  "Mqtt":{
+      "WirteLoopChanNum": 10,
+      "ReadPackLoop": 1,
+      "ReadTimeout": 600,
+      "WriteTimeout": 300
+  },
+  "Rpc":{
+      "MaxCoroutine":10000,
+      "RpcExpired": 1,
+      "LogSuccess":false
+  }
+}

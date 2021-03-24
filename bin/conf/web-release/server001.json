@@ -1,0 +1,26 @@
+{
+    "Settings":{
+    },
+    "Module":{
+          "webrestapi":[
+            {
+              "Id":"webrestapi",
+              "ProcessID":"001",
+              "Settings":{
+                "Port": "8080"
+              }
+            }
+          ]
+    },
+    "Mqtt":{
+        "WirteLoopChanNum": 10,
+        "ReadPackLoop": 1,
+        "ReadTimeout": 600,
+        "WriteTimeout": 300
+    },
+    "Rpc":{
+        "MaxCoroutine":10000,
+        "RpcExpired": 1,
+        "LogSuccess":false
+    }
+}

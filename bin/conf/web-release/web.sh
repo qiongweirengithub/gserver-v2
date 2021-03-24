@@ -4,3 +4,9 @@
 
 
 # pgrep -lf "web0" | awk '{print $1}'| xargs kill -15
+
+
+
+
+deploy -service=g-web-restapi -wd=/home/qiongwei/mycode/goprj/gserver.v3/ -port=SOME-UNUSED-PORT
+

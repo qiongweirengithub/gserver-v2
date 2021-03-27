@@ -1,12 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
-	"os/exec"
-	"math/rand"
-	"time"
+	"log"
+	"gserver.v2/admin/dbs"
+	"gserver.v2/deploy/application"
 )
 
 var (
@@ -16,65 +15,19 @@ var (
 	pid *string
 	websocketport *string
 	workdir *string
-	r *rand.Rand
+	container_id *string
+
 ) 
 
 
-func init() {
-    r = rand.New(rand.NewSource(time.Now().Unix()))
-}
-
-func RandString(len int) string {
-    bytes := make([]byte, len)
-    for i := 0; i < len; i++ {
-        b := r.Intn(26) + 65
-        bytes[i] = byte(b)
-    }
-    return string(bytes)
-}
-
-func execCDCmd(name string, arg ...string) (_ string, err error) {
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd := exec.Command(name, arg...)
-	cmd.Dir = "/home/qiongwei/myapp/k8s/app/" 
-
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-	errs:=cmd.Run()
-	if errs != nil {
-		fmt.Print(errs)
-	}
-	a:= out.Bytes();
-	fmt.Print(string(a))
-
-	return string(a), nil
-}
-
-
-func execCICmd(name string, arg ...string) (_ string, err error) {
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd := exec.Command(name, arg...)
-	cmd.Dir = *workdir 
-
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-	errs:=cmd.Run()
-	if errs != nil {
-		fmt.Print(errs)
-	}
-	a:= out.Bytes();
-	fmt.Print(string(a))
-
-	return string(a), nil
-}
-
+// 删除应用               deploy -service=kill -containerid=查询数据库或者docker ps -l
+// 部署 g-web-restapi    deploy -service=g-web-restapi -wd=/home/qiongwei/mycode/goprj/gserver.v3/ -port=8090
+// 
 func main() {
 
-	workdir = flag.String("wd", "default message", "it's user send workdir[help message]")
+	workdir = flag.String("wd", ".", "it's user send workdir[help message]")
 
-	service = flag.String("service", "default message", "it's user send message[help message]")
+	service = flag.String("service", "no service", "it's user send message[help message]")
 	
 	host = flag.String("host", "default host", "it's user send host[help message]")
 
@@ -84,97 +37,66 @@ func main() {
 
 	websocketport = flag.String("websocketport", "default websocketport", "it's user send websocketport[help message]")
 
+	container_id = flag.String("containerid", "", "it's user send pid[help message]")
+
 	flag.Parse();
 
 	fmt.Println(*service)
 
 	var err error
 
-	_, err = execCICmd("pwd")
 
-
-	if err != nil {
-		fmt.Print(err)
-		return
-	}
-	_, err = execCICmd("pwd")
-	if err != nil {
-		fmt.Print(err)
-	}
-
-	_, err = execCICmd("ls", "-lh")
-
-	
-	_, err = execCICmd("/bin/sh", "./build.sh")
-	if err != nil {
-		fmt.Print(err)
+	// 发布应用类型为 g-web-restapi
+	if *service == "kill" || *service == "rm" {
+		if *container_id == "" || len(*container_id) <20 {
+			fmt.Println("wrong container id: ", *container_id)
+			return
+		}
+		_, err = application.ExecCmd("docker", "container", "rm", "-f", *container_id)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("container:", *container_id, " kill success")
+		}
+		dbs.DeleteService(*container_id)		
 		return
 	}
 
 
-	_,err = execCICmd("cp", "./gserverv2", "/home/qiongwei/myapp/k8s/app")
+
+	// 构建程序，并生成应用文件
+	_, err = application.ExecCICmd(*workdir, "/bin/sh", "./build.sh")
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
+		return
 	}
 
-	_, err = execCICmd("cp", "./bin/conf/env.json", "/home/qiongwei/myapp/k8s/app")
+	// 拷贝应用到k8s目录
+	_,err = application.ExecCICmd(*workdir, "cp", "./gserverv2", "/home/qiongwei/myapp/k8s/app")
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 
+	// 拷贝环境变量到k8s目录
+	_, err = application.ExecCICmd(*workdir, "cp", "./bin/conf/env.json", "/home/qiongwei/myapp/k8s/app")
+	if err != nil {
+		fmt.Println(err)
+	}
 
+	// 发布应用类型为 g-web-restapi
 	if *service == "g-web-restapi" {
-
-		// check param
-		// 1. port 是否被占用
-
-		fmt.Println("deploying web")
-
-
-		_, err = execCICmd("cp", "./bin/conf/web-release/server-port.json", "/home/qiongwei/myapp/k8s/app/server-web.json")
+		// 部署 g-web-restapi 
+		containerId, serviceId, err := application.DeployingGWebRestApi(*workdir, *service, *port)
 		if err != nil {
-			fmt.Print(err)
-			return
+			log.Fatalln(err)
 		}
 
-		_, err = execCICmd("sed", "-i","s/PORT/" + *port + "/g", "/home/qiongwei/myapp/k8s/app/server-web.json")
+		fmt.Println("record web app: ", containerId, "-", serviceId)
+		_, err = dbs.CreateGservice(serviceId, 1, "127.0.0.1", *port, "image", containerId, "g_web");
+
 		if err != nil {
-			fmt.Print(err)
-			return
+			log.Fatalln(err)
 		}
-
-		fmt.Println("web app config json succ")
-		_, err = execCICmd("cp", "./bin/conf/web-release/web.Dockerfile", "/home/qiongwei/myapp/k8s/app")
-		if err != nil {
-			fmt.Print(err)
-			return
-		}
-		fmt.Println("web docker file succ")
-
-		_, err = execCDCmd("docker", "build", "-t", "g-web-restapi", "-f", "/home/qiongwei/myapp/k8s/app/web.Dockerfile", ".")
-		if err != nil {
-			fmt.Print(err)
-			return
-		}
-		fmt.Println("web docker build succ")
-
-
-		fmt.Println("runing with ports: ", *port)
-
-		appId := "-" + RandString(6)
-		containerName := *service + appId
-		containerPidFileName := *service+appId+".pid"
-
-		_, err = execCDCmd("docker","run","-d","--name", containerName, "--cidfile" , containerPidFileName,"-p"+*port+":"+*port, "g-web-restapi")
-		if err != nil {
-			fmt.Print(err)
-			return
-		}
-		fmt.Println("recording web app: ", containerName)
-
-		// record to db
-
-		return
 	}
 
 	if *service == "auth" {

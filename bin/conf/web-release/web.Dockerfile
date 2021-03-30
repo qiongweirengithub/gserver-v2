@@ -13,7 +13,7 @@ WORKDIR ～
 
 # 将jar包添加到容器中并更名为app.jar
 ADD gserverv2 /usr/bin/gserverv2 
-ADD server-web.json server.json
+ADD server-port.json server.json
 ADD env.json env.json
 
 # 运行jar包

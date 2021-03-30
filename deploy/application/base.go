@@ -13,7 +13,6 @@ import (
 
 var (
 	r *rand.Rand
-	CD_Dir = "/home/qiongwei/myapp/k8s/app/" 
 ) 
 
 func init() {
@@ -38,39 +37,67 @@ func RandString(len int) string {
     return string(bytes)
 }
 
-func ExecCDCmd(name string, arg ...string) (_ string, err error) {
+func ExecCDCmd(workdir string, command string, arg ...string) (_ string, err error) {
 	var out bytes.Buffer
 	var stderr bytes.Buffer
-	cmd := exec.Command(name, arg...)
-	cmd.Dir = CD_Dir
+	defer printLine()
+
+	cmd := exec.Command(command, arg...)
+	cmd.Dir = workdir
 
 	cmd.Stdout = &out
 	cmd.Stderr = &stderr
+
 	errs:=cmd.Run()
 	if errs != nil {
-		fmt.Println(errs)
+		fmt.Println("=======error==========")
+		fmt.Println("cd cmd run error", errs)
+		fmt.Println("work dir :", workdir)
+		fmt.Println("cmd      :", cmd)
+		fmt.Println("=======error==========")
+		return "", errs
 	}
 	a:= out.Bytes();
-	fmt.Println(string(a))
+	fmt.Println("=======success==========")
+	fmt.Println("work dir :", workdir)
+	fmt.Println("cmd      :", cmd)
+	fmt.Println("res      :", string(a))
+	fmt.Println("=======success=========")
+	
 
 	return string(a), nil
 }
 
 
-func ExecCICmd( workdir string, name string, arg ...string) (_ string, err error) {
+func ExecCICmd( workdir string, command string, arg ...string) (_ string, err error) {
 	var out bytes.Buffer
 	var stderr bytes.Buffer
-	cmd := exec.Command(name, arg...)
+	cmd := exec.Command(command, arg...)
 	cmd.Dir = workdir 
 
 	cmd.Stdout = &out
 	cmd.Stderr = &stderr
+	
+	defer printLine()
+	
 	errs:=cmd.Run()
+
+
 	if errs != nil {
-		fmt.Println(errs)
+		fmt.Println("=======error==========")
+		fmt.Println("ci cmd run error", errs)
+		fmt.Println("work dir :", workdir)
+		fmt.Println("cmd      :", cmd)
+		fmt.Println("========error=========")
+		return "", errs
 	}
 	a:= out.Bytes();
-	fmt.Println(string(a))
+	fmt.Println("=======success==========")
+	fmt.Println("work dir :", workdir)
+	fmt.Println("cmd      :", cmd)
+	fmt.Println("res      :", string(a))
+	fmt.Println("========success=========")
+
 
 	return string(a), nil
 }
@@ -78,19 +105,34 @@ func ExecCICmd( workdir string, name string, arg ...string) (_ string, err error
 
 
 func ExecCmd(name string, arg ...string) (_ string, err error) {
+
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd := exec.Command(name, arg...)
 	cmd.Stdout = &out
 	cmd.Stderr = &stderr
+
+	defer printLine()
+
 	errs:=cmd.Run()
 	if errs != nil {
-		fmt.Println(errs)
+		fmt.Println("=======error==========")
+		fmt.Println("cmd      :", cmd)
+		fmt.Println("cmd run error", errs)
+		fmt.Println("========error=========")
+		return "", errs
 	}
 	a:= out.Bytes();
-	fmt.Println(string(a))
-
+	fmt.Println("=======success=========")
+	fmt.Println("cmd      :", cmd)
+	fmt.Println("res      :", string(a))
+	fmt.Println("=======success==========")
 	return string(a), nil
 }
 
 
+func printLine() {
+	fmt.Println("")
+	fmt.Println("")
+	fmt.Println("")
+}

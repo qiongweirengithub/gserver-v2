@@ -25,7 +25,7 @@ type Auth struct {
 
 func (self *Auth) GetType() string {
 	//很关键,需要与配置文件中的Module配置对应
-	return "auth-service"
+	return "authservice"
 }
 func (self *Auth) Version() string {
 	//可以在监控时了解代码版本

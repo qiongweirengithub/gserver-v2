@@ -64,6 +64,8 @@ func GetCurrentPath() (string, error) {
 // 删除应用               		deploy -service=kill -containerid=查询数据库或者docker ps -l
 // 部署 g-web-restapi    		deploy -service=g-web-restapi -port=8090
 // 部署 g-gate-connectionsvc    deploy -service=g-gate-connectionsvc -websocketport=3653
+// 部署 g-authservice           deploy -service=g-authservice
+
 // 
 func main() {
 
@@ -157,7 +159,22 @@ func main() {
 		}
 	}
 
-	if *service == "auth" {
+	if *service == "g-authservice" {
+		// 部署 g-authservice
+		//  TODO 检查端口
+		containerId, serviceId, err := application.DeployingGAuthServuce(ci_dir, *service)
+		if err != nil {
+			log.Fatalln(err)
+			return
+		}
+
+		fmt.Println("record g-auth service: ", containerId, "-", serviceId)
+		_, err = dbs.CreateGservice(serviceId, 1, "127.0.0.1", *port, "image", containerId, "g_auth");
+
+		if err != nil {
+			log.Fatalln(err)
+			return
+		}
 		return
 	}
 

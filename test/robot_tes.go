@@ -16,7 +16,9 @@ package main
 import (
 	"fmt"
 	"github.com/liangdas/armyant/task"
-	"gserver.v2/test/authtest"
+	// "gserver.v2/test/authtest"
+	"gserver.v2/test/test"
+
 	"os"
 	"os/signal"
 )

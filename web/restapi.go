@@ -84,7 +84,6 @@ func (self *GameApi)startHttpServer(port string) *http.Server {
 		_, _ = io.WriteString(w, rstr)
 	})
 
-
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
 			// cannot panic, because this probably is an intentional close

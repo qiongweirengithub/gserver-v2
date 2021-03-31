@@ -59,8 +59,9 @@ func GetCurrentPath() (string, error) {
 }
 
 
-// 删除应用               deploy -service=kill -containerid=查询数据库或者docker ps -l
-// 部署 g-web-restapi    deploy -service=g-web-restapi -wd=/home/qiongwei/mycode/goprj/gserver.v3/ -port=8090
+// 删除应用               		deploy -service=kill -containerid=查询数据库或者docker ps -l
+// 部署 g-web-restapi    		deploy -service=g-web-restapi -port=8090
+// 部署 g-gate-connectionsvc    deploy -service=g-gate-connectionsvc -websocketport=3653
 // 
 func main() {
 
@@ -136,9 +137,11 @@ func main() {
 	// 发布应用类型为 g-web-restapi
 	if *service == "g-web-restapi" {
 		// 部署 g-web-restapi 
+		//  TODO 检查端口
 		containerId, serviceId, err := application.DeployingGWebRestApi(ci_dir, *service, *port)
 		if err != nil {
 			log.Fatalln(err)
+			return
 		}
 
 		fmt.Println("record web app: ", containerId, "-", serviceId)
@@ -146,6 +149,7 @@ func main() {
 
 		if err != nil {
 			log.Fatalln(err)
+			return
 		}
 	}
 
@@ -154,8 +158,22 @@ func main() {
 	}
 
 
-	if *service == "gate" {
-		
+	if *service == "g-gate-connectionsvc" {
+		// 部署 g-gate-connectionsvc 
+		//  TODO 检查端口
+		containerId, serviceId, err := application.DeployingGGateconnectionsvc(ci_dir, *service, *websocketport)
+		if err != nil {
+			log.Fatalln(err)
+			return
+		}
+
+		fmt.Println("record gate connection svc : ", containerId, "-", serviceId)
+		_, err = dbs.CreateGservice(serviceId, 1, "127.0.0.1", *websocketport, "image", containerId, "g-gate-connectionsvc");
+
+		if err != nil {
+			log.Fatalln(err)
+			return
+		}
 		return
 	}
 

@@ -1,0 +1,23 @@
+{
+    "Settings":{
+    },
+    "Module":{
+          "authservice":[
+            {
+              "Id":"authservice",
+              "ProcessID":"authservice"
+            }
+          ]
+    },
+    "Mqtt":{
+        "WirteLoopChanNum": 10,
+        "ReadPackLoop": 1,
+        "ReadTimeout": 600,
+        "WriteTimeout": 300
+    },
+    "Rpc":{
+        "MaxCoroutine":10000,
+        "RpcExpired": 1,
+        "LogSuccess":false
+    }
+}

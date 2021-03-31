@@ -6,7 +6,7 @@
               "ProcessID":"gateconnectionsvc",
               "Settings":{
                 "wsaddr": "WSADDR",
-                "tcpaddr": "" 
+                "tcpaddr": "3654" 
               }
             }
           ]

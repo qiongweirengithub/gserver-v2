@@ -22,7 +22,9 @@ var (
 	websocketport *string
 	ci_dir string
 	container_id *string
-	project_url string = "git@github.com:qiongweirengithub/gserver-v2.git"
+	// project_url string = "git@github.com:qiongweirengithub/gserver-v2.git"
+	project_url string = "/home/qiongwei/mycode/goprj/gserver.v3/"
+
 ) 
 
 
@@ -115,7 +117,9 @@ func main() {
 	application.ExecCICmd(ci_dir, "git", "clone", project_url)
 	
 	// 切换到git目录
-	ci_dir = ci_dir + "/gserver-v2"
+	// ci_dir = ci_dir + "/gserver-v2"
+	ci_dir = ci_dir + "/gserver.v3"
+
 	application.ExecCICmd(ci_dir, "ls", "-lh")
 	application.ExecCICmd(ci_dir, "git", "checkout", "main-v3.0")
 	application.ExecCICmd(ci_dir, "git", "branch")

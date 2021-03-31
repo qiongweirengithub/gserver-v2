@@ -37,6 +37,8 @@ func NewWork(manager *Manager) *Work {
 	err := this.Connect(opts)
 	if err != nil {
 		fmt.Println(err.Error())
+	} else {
+		fmt.Println("connection success")
 	}
 
 	this.On("/gate/send/test", func(client MQTT.Client, msg MQTT.Message) {

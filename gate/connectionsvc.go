@@ -22,7 +22,7 @@ type Gate struct {
 
 func (this *Gate) GetType() string {
     //很关键,需要与配置文件中的Module配置对应
-    return "gate-connectionsvc"
+    return "gateconnectionsvc"
 }
 func (this *Gate) Version() string {
     //可以在监控时了解代码版本

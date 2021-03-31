@@ -31,7 +31,7 @@ func DeployingGGateconnectionsvc(wd string, service string, wsaddr string)  (str
 		return "","", err
 	}
 
-	_, err = ExecCDCmd(wd, "docker", "build", "-t", "g-gate-connectionsvc", "-f", wd + "/gate.Dockerfile", ".")
+	_, err = ExecCDCmd(wd, "docker", "build", "-t", service, "-f", wd + "/gate.Dockerfile", ".")
 	if err != nil {
 		fmt.Print(err)
 		return "","", err
@@ -42,7 +42,7 @@ func DeployingGGateconnectionsvc(wd string, service string, wsaddr string)  (str
 	containerName := service + appId
 	containerPidFileName := service+appId+".pid"
 
-	_, err = ExecCDCmd(wd, "docker","run","-d","--name", containerName, "--cidfile" , containerPidFileName,"-p"+wsaddr+":"+wsaddr, "g-web-restapi")
+	_, err = ExecCDCmd(wd, "docker","run","-d","--name", containerName, "--cidfile" , containerPidFileName,"-p"+wsaddr+":"+wsaddr, service)
 
 	if err != nil {
 		fmt.Print(err)

@@ -23,7 +23,6 @@ var (
 	ci_dir string
 	container_id *string
 	project_url string = "git@github.com:qiongweirengithub/gserver-v2.git"
-	cd_dir string
 ) 
 
 
@@ -156,7 +155,7 @@ func main() {
 
 
 	if *service == "gate" {
-
+		
 		return
 	}
 

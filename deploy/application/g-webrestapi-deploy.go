@@ -12,13 +12,13 @@ func DeployingGWebRestApi(wd string, service string, port string)  (string, stri
 
 	fmt.Println("deploying web")
 
-	_, err := ExecCICmd(wd, "cp", "./bin/conf/web-release/server-port.json", "./")
+	_, err := ExecCICmd(wd, "cp", "./bin/conf/web-release/server.json", "./")
 	if err != nil {
 		fmt.Print(err)
 		return "", "", err
 	}
 
-	_, err = ExecCICmd(wd, "sed", "-i","s/PORT/" + port + "/g", "./server-port.json")
+	_, err = ExecCICmd(wd, "sed", "-i","s/PORT/" + port + "/g", "./server.json")
 	if err != nil {
 		fmt.Print(err)
 		return "","", err

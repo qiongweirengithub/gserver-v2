@@ -82,6 +82,7 @@ func (self *Auth) logout(token string) (r string, err error) {
 
 func (self *Auth) gatesay(session gate.Session, msg map[string]interface{}) (r string, err error) {
 	session.Send("/gate/send/test", []byte(fmt.Sprintf("send hi to %v", msg["name"])))
+	fmt.Println("new msg from client", msg["name"])
 	return fmt.Sprintf("hi %v 你在网关 %v, session:%v", msg["name"], session.GetServerId(), session.GetSessionId()), nil
 }
 

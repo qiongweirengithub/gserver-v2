@@ -74,7 +74,7 @@ task:=task.Task{
 N/C 可计算出每一个Work(协程) RunWorker将要调用的次数
 */
 func (this *Work) RunWorker(t task.Task) {
-	msg, err := this.Request("helloworld/HD_say", []byte(`{"name":"mqant"}`))
+	msg, err := this.Request("authservice/HD_hello", []byte(`{"name":"mqant"}`))
 	if err != nil {
 		return
 	}

@@ -57,8 +57,10 @@ func (self *Room) OnInit(app module.App, settings *conf.ModuleSettings) {
 		// 注册到 consul 的服务id， 这个是用来做服务路由的，因此一定要
 		server.Id(roomid),
 	)
-
-	self.GetServer().RegisterGO("/table_create", self.createTable)
+	self.room = room.NewRoom(self)
+	
+	// 由匹配服调用，
+	self.GetServer().RegisterGO("/create_table", self.createTable)
 	
 	self.GetServer().RegisterGO("HD_jointable", self.joinTable)
 	
@@ -84,6 +86,7 @@ func (self *Room) OnDestroy() {
 *  创建table
 */
 func (self *Room) createTable(module module.RPCModule, tableId string) (room.BaseTable, error) {
+
 	log.Info("creating table %v", tableId)
 	table := NewTable(
 		module,

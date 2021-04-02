@@ -58,7 +58,7 @@ func (self *Room) OnInit(app module.App, settings *conf.ModuleSettings) {
 		server.Id(roomid),
 	)
 
-	self.GetServer().RegisterGO("table_create", self.createTable)
+	self.GetServer().RegisterGO("/table_create", self.createTable)
 	
 	self.GetServer().RegisterGO("HD_jointable", self.joinTable)
 	

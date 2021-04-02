@@ -16,25 +16,36 @@ package main
 import (
 	"fmt"
 	"github.com/liangdas/armyant/task"
-	// "gserver.v2/test/authtest"
-	"gserver.v2/test/test"
-
+	// "gserver.v2/test/authservicetest"
+	"gserver.v2/test/battleroomsvctest"
 	"os"
 	"os/signal"
 )
 
 func main() {
 
-	task := task.LoopTask{
-		C: 10, //并发数
-	}
-	manager := test_task.NewManager(task) //房间模型的demo
-	// manager := test_task.NewManager(task) //gate demo
+	// task_authservice := task.LoopTask{
+	// 	C: 10, //并发数
+	// }
+	// manager := authservicetest.NewManager(task_authservice) //房间模型的demo
+
 	fmt.Println("开始压测请等待")
-	task.Run(manager)
+	// task_authservice.Run(manager)
+
+
+
+	task_battleroomsvctest := task.LoopTask{
+		C: 1, //并发数
+	}
+	manager_authservicetest := battleroomsvctest.NewManager(task_battleroomsvctest) //房间模型的demo
+
+	task_battleroomsvctest.Run(manager_authservicetest)
+
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	<-c
-	task.Stop()
+	// task_authservice.Stop()
+	task_battleroomsvctest.Stop()
+
 	os.Exit(1)
 }

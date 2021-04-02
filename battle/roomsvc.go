@@ -60,9 +60,9 @@ func (self *Room) OnInit(app module.App, settings *conf.ModuleSettings) {
 
 	self.GetServer().RegisterGO("/table/create", self.createTable)
 	
-	self.GetServer().RegisterGO("/HD_jointable", self.joinTable)
+	self.GetServer().RegisterGO("HD_jointable", self.joinTable)
 	
-	self.GetServer().RegisterGO("/HD_playerdo", self.playerdo)
+	self.GetServer().RegisterGO("HD_playerdo", self.playerdo)
 
 	log.Info("%v模块初始化完成, room id: %v", self.GetType(), roomid)
 }

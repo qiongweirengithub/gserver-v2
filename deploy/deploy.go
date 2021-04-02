@@ -22,6 +22,8 @@ var (
 	websocketport *string
 	ci_dir string
 	container_id *string
+	roomid *string
+
 	// project_url string = "git@github.com:qiongweirengithub/gserver-v2.git"
 	project_url string = "/home/qiongwei/mycode/goprj/gserver.v3/"
 
@@ -65,6 +67,7 @@ func GetCurrentPath() (string, error) {
 // 部署 g-web-restapi    		deploy -service=g-web-restapi -port=8090
 // 部署 g-gate-connectionsvc    deploy -service=g-gate-connectionsvc -websocketport=3653
 // 部署 g-authservice           deploy -service=g-authservice
+// 部署 g-battleroomsvc         deploy -service=g-battleroomsvc -roomid=xxx
 
 // 
 func main() {
@@ -75,11 +78,14 @@ func main() {
 
 	port = flag.String("port", "default port", "it's user send port[help message]")
 
+	roomid = flag.String("roomid", "", "it's user send pid[help message]")
+
 	pid = flag.String("pid", "default pid", "it's user send pid[help message]")
 
 	websocketport = flag.String("websocketport", "default websocketport", "it's user send websocketport[help message]")
 
 	container_id = flag.String("containerid", "", "it's user send pid[help message]")
+
 
 	flag.Parse();
 
@@ -198,15 +204,27 @@ func main() {
 		return
 	}
 
-	if *service == "web" {
+	if *service == "g-battleroomsvc" {
+
+		containerId, serviceId, err := application.DeployingGBattleRoomsvc(ci_dir, *service, *roomid)
+		if err != nil {
+			log.Fatalln(err)
+			return
+		}
+
+		fmt.Println("record battle room svc : ", containerId, "-", serviceId)
+		_, err = dbs.CreateGservice(serviceId, 1, "127.0.0.1", *websocketport, "image", containerId, "g-gate-connectionsvc");
+
+		if err != nil {
+			log.Fatalln(err)
+			return
+		}
+		return
 
 		return
 	}
 
-	if *service == "web" {
 
-		return
-	}
 
 	fmt.Println("deploying service: ", *service)
 	fmt.Println("deploying host: ", *host)

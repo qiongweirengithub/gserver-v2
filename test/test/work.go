@@ -16,6 +16,8 @@ package test_task
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/liangdas/armyant/task"
 	"github.com/liangdas/armyant/work"
@@ -74,12 +76,16 @@ task:=task.Task{
 N/C 可计算出每一个Work(协程) RunWorker将要调用的次数
 */
 func (this *Work) RunWorker(t task.Task) {
-	msg, err := this.Request("authservice/HD_hello", []byte(`{"name":"mqant"}`))
-	if err != nil {
-		return
+	
+	ticker := time.NewTicker(time.Second*2)
+	for _ =range ticker.C {
+		msg, err := this.Request("authservice/HD_hello", []byte(`{"name":"mqant"}`))
+		if err != nil {
+			return
+		}
+		fmt.Println(msg.Topic(), string(msg.Payload()))
 	}
 
-	fmt.Println(msg.Topic(), string(msg.Payload()))
 }
 func (this *Work) Init(t task.Task) {
 

@@ -33,7 +33,7 @@ type RoomSvc struct {
 
 func (self *RoomSvc) GetType() string {
 	//很关键,需要与配置文件中的Module配置对应
-	return "game-roomsvc"
+	return "battleroomsvc"
 }
 func (self *RoomSvc) Version() string {
 	//可以在监控时了解代码版本
@@ -50,17 +50,21 @@ func (self *RoomSvc) OnInit(app module.App, settings *conf.ModuleSettings) {
 	// 启动后自动把自己的信息同步到数据库
 
 	// 固定id,可定向访问
-	var nodeId string = settings.ProcessID
+	var roomid string = settings.Settings["room_id"].(string)
 	self.BaseModule.OnInit(self, app, settings,
 		server.RegisterInterval(15*time.Second),
 		server.RegisterTTL(30*time.Second),
 		// 注册到 consul 的服务id， 这个是用来做服务路由的，因此一定要
-		server.Id(nodeId),
+		server.Id(roomid),
 	)
 
-
 	self.GetServer().RegisterGO("/table/create", self.createTable)
-	log.Info("%v模块初始化完成...", self.GetType())
+	
+	self.GetServer().RegisterGO("/HD_jointable", self.joinTable)
+	
+	self.GetServer().RegisterGO("/HD_playerdo", self.playerdo)
+
+	log.Info("%v模块初始化完成, room id: %v", self.GetType(), roomid)
 }
 
 func (self *RoomSvc) Run(closeSig chan bool) {
@@ -75,7 +79,12 @@ func (self *RoomSvc) OnDestroy() {
 	log.Info("%v模块已回收...", self.GetType())
 }
 
+
+/**
+*  创建table
+*/
 func (self *RoomSvc) createTable(module module.RPCModule, tableId string) (room.BaseTable, error) {
+	log.Info("creating table %v", tableId)
 	table := NewTable(
 		module,
 		room.TableId(tableId),
@@ -88,13 +97,33 @@ func (self *RoomSvc) createTable(module module.RPCModule, tableId string) (room.
 			return nil
 		}),
 	)
-
 	// 更新此room的状态到数据库 
 
 	return table, nil
 }
 
-func (self *RoomSvc) gatesay(session gate.Session, msg map[string]interface{}) (r string, err error) {
+/**
+*  加入table
+*/
+func (self *RoomSvc) joinTable(session gate.Session, msg map[string]interface{}) (string, error) {
+	tableId := msg["table_id"].(string)
+	log.Info("new player joining table %v", tableId)
+	table := self.room.GetTable(tableId)
+	if table == nil {
+		return "操作失败", errors.New("房间不存在")
+	}
+	erro := table.PutQueue("join", session, msg)
+	if erro != nil {
+		return "", erro
+	}
+	return tableId, nil
+}
+
+
+/**
+*  玩家行为
+*/
+func (self *RoomSvc) playerdo(session gate.Session, msg map[string]interface{}) (r string, err error) {
 	table_id := msg["table_id"].(string)
 	action := msg["action"].(string)
 	table := self.room.GetTable(table_id)
@@ -103,8 +132,8 @@ func (self *RoomSvc) gatesay(session gate.Session, msg map[string]interface{}) (
 	}
 	erro := table.PutQueue(action, session, msg)
 	if erro != nil {
-		return "", erro
+		return "action fail", erro
 	}
-	return "success", nil
+	return "action success", nil
 }
 

@@ -67,7 +67,7 @@ func GetCurrentPath() (string, error) {
 // 部署 g-web-restapi    		deploy -service=g-web-restapi -port=8090
 // 部署 g-gate-connectionsvc    deploy -service=g-gate-connectionsvc -websocketport=3653
 // 部署 g-authservice           deploy -service=g-authservice
-// 部署 g-battleroomsvc         deploy -service=g-battleroomsvc -roomid=xxx
+// 部署 g-battleroomsvc         deploy -service=g-battleroomsvc -roomid=12345
 
 // 
 func main() {

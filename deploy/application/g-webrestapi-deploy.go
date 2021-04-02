@@ -31,7 +31,7 @@ func DeployingGWebRestApi(wd string, service string, port string)  (string, stri
 		return "","", err
 	}
 
-	_, err = ExecCDCmd(wd, "docker", "build", "-t", "g-web-restapi", "-f", wd + "/web.Dockerfile", ".")
+	_, err = ExecCDCmd(wd, "docker", "build", "-t", service, "-f", wd + "/web.Dockerfile", ".")
 	if err != nil {
 		fmt.Print(err)
 		return "","", err
@@ -42,7 +42,7 @@ func DeployingGWebRestApi(wd string, service string, port string)  (string, stri
 	containerName := service + appId
 	containerPidFileName := service+appId+".pid"
 
-	_, err = ExecCDCmd(wd, "docker","run","-d","--name", containerName, "--cidfile" , containerPidFileName,"-p"+port+":"+port, "g-web-restapi")
+	_, err = ExecCDCmd(wd, "docker","run","-d","--name", containerName, "--cidfile" , containerPidFileName,"-p"+port+":"+port, service)
 	if err != nil {
 		fmt.Print(err)
 		return "","", err

@@ -31,7 +31,7 @@ func DeployingGBattleRoomsvc(wd string, service string, roomid string)  (string,
 		return "","", err
 	}
 
-	_, err = ExecCDCmd(wd, "docker", "build", "-t", "g-battle-room", "-f", wd + "/battle.Dockerfile", ".")
+	_, err = ExecCDCmd(wd, "docker", "build", "-t", service, "-f", wd + "/battle.Dockerfile", ".")
 	if err != nil {
 		fmt.Print(err)
 		return "","", err
@@ -42,7 +42,7 @@ func DeployingGBattleRoomsvc(wd string, service string, roomid string)  (string,
 	containerName := service + appId
 	containerPidFileName := service+appId+".pid"
 
-	_, err = ExecCDCmd(wd, "docker","run","-d","--name", containerName, "--cidfile" , containerPidFileName, "g-battle-roomsvc")
+	_, err = ExecCDCmd(wd, "docker","run","-d","--name", containerName, "--cidfile" , containerPidFileName, service)
 	if err != nil {
 		fmt.Print(err)
 		return "","", err

@@ -51,6 +51,7 @@ func (self *RoomSvc) OnInit(app module.App, settings *conf.ModuleSettings) {
 
 	// 固定id,可定向访问
 	var roomid string = settings.Settings["room_id"].(string)
+	log.Info("roomid %v", roomid)
 	self.BaseModule.OnInit(self, app, settings,
 		server.RegisterInterval(15*time.Second),
 		server.RegisterTTL(30*time.Second),

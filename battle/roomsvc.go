@@ -44,9 +44,10 @@ func (self *RoomSvc) OnAppConfigurationLoaded(app module.App) {
 	self.BaseModule.OnAppConfigurationLoaded(app)
 }
 func (self *RoomSvc) OnInit(app module.App, settings *conf.ModuleSettings) {
-	self.BaseModule.OnInit(self, app, settings)
-	self.GetServer().Options().Metadata["state"] = "alive"
 
+	log.Info("initing %v", "battle roomsvc")
+
+	self.GetServer().Options().Metadata["state"] = "alive"
 	// 启动后自动把自己的信息同步到数据库
 
 	// 固定id,可定向访问

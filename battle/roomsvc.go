@@ -46,8 +46,6 @@ func (self *Room) OnAppConfigurationLoaded(app module.App) {
 func (self *Room) OnInit(app module.App, settings *conf.ModuleSettings) {
 
 	log.Info("initing %v", "battle Room")
-
-	self.GetServer().Options().Metadata["state"] = "alive"
 	// 启动后自动把自己的信息同步到数据库
 
 	// 固定id,可定向访问

@@ -64,6 +64,9 @@ func main() {
 		// 启动长链接业务
 		gate.ConnectionSvc(),
 
+		// 房间服务，负责管理 battle table
+		battle.RoomSvc(),
+
 		// 网管信息查询
 		gate.GateService(),
 

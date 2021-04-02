@@ -21,31 +21,31 @@ import (
 
 )
 
-var Room = func() module.Module {
-	this := new(RoomSvc)
+var RoomSvc = func() module.Module {
+	this := new(Room)
 	return this
 }
 
-type RoomSvc struct {
+type Room struct {
 	basemodule.BaseModule
 	room *room.Room
 }
 
-func (self *RoomSvc) GetType() string {
+func (self *Room) GetType() string {
 	//很关键,需要与配置文件中的Module配置对应
-	return "battleroomsvc"
+	return "battleRoom"
 }
-func (self *RoomSvc) Version() string {
+func (self *Room) Version() string {
 	//可以在监控时了解代码版本
 	return "1.0.0"
 }
-func (self *RoomSvc) OnAppConfigurationLoaded(app module.App) {
+func (self *Room) OnAppConfigurationLoaded(app module.App) {
 	//当App初始化时调用，这个接口不管这个模块是否在这个进程运行都会调用
 	self.BaseModule.OnAppConfigurationLoaded(app)
 }
-func (self *RoomSvc) OnInit(app module.App, settings *conf.ModuleSettings) {
+func (self *Room) OnInit(app module.App, settings *conf.ModuleSettings) {
 
-	log.Info("initing %v", "battle roomsvc")
+	log.Info("initing %v", "battle Room")
 
 	self.GetServer().Options().Metadata["state"] = "alive"
 	// 启动后自动把自己的信息同步到数据库
@@ -69,13 +69,13 @@ func (self *RoomSvc) OnInit(app module.App, settings *conf.ModuleSettings) {
 	log.Info("%v模块初始化完成, room id: %v", self.GetType(), roomid)
 }
 
-func (self *RoomSvc) Run(closeSig chan bool) {
+func (self *Room) Run(closeSig chan bool) {
 	log.Info("%v模块运行中...", self.GetType())
 	<-closeSig
 	log.Info("%v模块已停止...", self.GetType())
 }
 
-func (self *RoomSvc) OnDestroy() {
+func (self *Room) OnDestroy() {
 	//一定继承
 	self.BaseModule.OnDestroy()
 	log.Info("%v模块已回收...", self.GetType())
@@ -85,7 +85,7 @@ func (self *RoomSvc) OnDestroy() {
 /**
 *  创建table
 */
-func (self *RoomSvc) createTable(module module.RPCModule, tableId string) (room.BaseTable, error) {
+func (self *Room) createTable(module module.RPCModule, tableId string) (room.BaseTable, error) {
 	log.Info("creating table %v", tableId)
 	table := NewTable(
 		module,
@@ -107,7 +107,7 @@ func (self *RoomSvc) createTable(module module.RPCModule, tableId string) (room.
 /**
 *  加入table
 */
-func (self *RoomSvc) joinTable(session gate.Session, msg map[string]interface{}) (string, error) {
+func (self *Room) joinTable(session gate.Session, msg map[string]interface{}) (string, error) {
 	tableId := msg["table_id"].(string)
 	log.Info("new player joining table %v", tableId)
 	table := self.room.GetTable(tableId)
@@ -125,7 +125,7 @@ func (self *RoomSvc) joinTable(session gate.Session, msg map[string]interface{})
 /**
 *  玩家行为
 */
-func (self *RoomSvc) playerdo(session gate.Session, msg map[string]interface{}) (r string, err error) {
+func (self *Room) playerdo(session gate.Session, msg map[string]interface{}) (r string, err error) {
 	table_id := msg["table_id"].(string)
 	action := msg["action"].(string)
 	table := self.room.GetTable(table_id)

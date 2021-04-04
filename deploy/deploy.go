@@ -89,21 +89,24 @@ func main() {
 
 	flag.Parse();
 
-	fmt.Println(*service)
 
 	var err error
 
 	// 下线应用
 	if *service == "kill" || *service == "rm" {
+
+		fmt.Println(application.YellowBg, "start killing svc: ", *service, application.Reset)
+
 		if *container_id == "" || len(*container_id) <20 {
-			fmt.Println("wrong container id: ", *container_id)
+			fmt.Println(application.Red, "wrong container id: ", *container_id, application.Reset)
 			return
 		}
+		fmt.Println(application.Green, "killing container : ", *container_id, application.Reset)
 		_, err = application.ExecCmd("docker", "container", "rm", "-f", *container_id)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(application.Red, "kill container fail: ", *container_id, err, application.Reset)
 		} else {
-			fmt.Println("container:", *container_id, " kill success")
+			fmt.Println(application.Green, "container:", *container_id, " kill success", application.Reset)
 		}
 		dbs.DeleteService(*container_id)		
 		return
@@ -111,9 +114,12 @@ func main() {
 
 	// ================ 发布应用 ====================
 
+	fmt.Println(application.YellowBg, "start deploy svc: ", *service, application.Reset)
+
 	// 创建临时文件夹
+	
 	tmpDir := "/tmp/gserver-" + application.RandString(20)
-	fmt.Println("creating tmp dir : ",  tmpDir)
+	fmt.Println(application.MagentaBg, "create tmp dir ", tmpDir, application.Reset)
 	application.ExecCmd("mkdir", tmpDir)
 
 	// 清理tmp数据
@@ -122,45 +128,49 @@ func main() {
 	ci_dir = tmpDir
 
 	// 拉取项目
+	fmt.Println(application.MagentaBg, "loading project", project_url, application.Reset)
 	application.ExecCICmd(ci_dir, "git", "clone", project_url)
 	
-	// 切换到git目录
+	// 切换到git分支
 	// ci_dir = ci_dir + "/gserver-v2"
 	ci_dir = ci_dir + "/gserver.v3"
-
-	application.ExecCICmd(ci_dir, "ls", "-lh")
-	application.ExecCICmd(ci_dir, "git", "checkout", "main-v3.0")
-	application.ExecCICmd(ci_dir, "git", "branch")
-
+	_, err = application.ExecCICmd(ci_dir, "git", "checkout", "main-v3.0")
+	if err != nil {
+		fmt.Println(application.Red, "branch checkout fail: ", *container_id, err, application.Reset)
+		return
+	}
 	
 	// 构建程序，并生成应用文件
+	fmt.Println(application.MagentaBg, "building project", project_url, application.Reset)
 	_, err = application.ExecCICmd(ci_dir, "/bin/sh", "./build.sh")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(application.Red, "project build fail: ", *container_id, err, application.Reset)
 		return
 	}
 
 	// 拷贝环境变量到构建目录
+	fmt.Println(application.MagentaBg, "copying project env", project_url, application.Reset)
 	_, err = application.ExecCICmd(ci_dir, "cp", "./bin/conf/env.json", "./")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(application.Red, "copying project env fail", project_url, err, application.Reset)
+		return
 	}
 
 	// 发布应用类型为 g-web-restapi
 	if *service == "g-web-restapi" {
 		// 部署 g-web-restapi 
 		//  TODO 检查端口
+		fmt.Println(application.MagentaBg, "deploy service", *service, application.Reset)
 		containerId, serviceId, err := application.DeployingGWebRestApi(ci_dir, *service, *port)
 		if err != nil {
-			log.Fatalln(err)
+			fmt.Println(application.Red, "deploy service ", *service, " fail", err, application.Reset)
 			return
 		}
-
-		fmt.Println("record web app: ", containerId, "-", serviceId)
 		_, err = dbs.CreateGservice(serviceId, 1, "127.0.0.1", *port, "image", containerId, "g_web");
 
 		if err != nil {
 			log.Fatalln(err)
+			fmt.Println(application.Red, "deploy service ", *service, " fail", err, application.Reset)
 			return
 		}
 	}
@@ -206,26 +216,19 @@ func main() {
 
 	if *service == "g-battleroomsvc" {
 
+		fmt.Println(application.MagentaBg, service, "is ready to deploy", *service,  application.Reset)
+
 		containerId, serviceId, err := application.DeployingGBattleRoomsvc(ci_dir, *service, *roomid)
 		if err != nil {
-			log.Fatalln(err)
+			fmt.Println(application.Red, "deploying svc", *service, " error", application.Reset)
 			return
 		}
-
-		fmt.Println("record battle room svc : ", containerId, "-", serviceId)
 		_, err = dbs.CreateGservice(serviceId, 1, "127.0.0.1", *websocketport, "image", containerId, "g-gate-connectionsvc");
 
 		if err != nil {
-			log.Fatalln(err)
+			fmt.Println(application.Red, "recording svc", *service, " error", application.Reset)
 			return
 		}
 		return
-
-		return
 	}
-
-
-
-	fmt.Println("deploying service: ", *service)
-	fmt.Println("deploying host: ", *host)
 }

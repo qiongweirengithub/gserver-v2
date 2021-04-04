@@ -13,7 +13,27 @@ import (
 
 var (
 	r *rand.Rand
-) 
+	GreenBg      = string([]byte{27, 91, 57, 55, 59, 52, 50, 109})
+	WhiteBg      = string([]byte{27, 91, 57, 48, 59, 52, 55, 109})
+	YellowBg     = string([]byte{27, 91, 57, 48, 59, 52, 51, 109})
+	RedBg        = string([]byte{27, 91, 57, 55, 59, 52, 49, 109})
+	BlueBg       = string([]byte{27, 91, 57, 55, 59, 52, 52, 109})
+	MagentaBg    = string([]byte{27, 91, 57, 55, 59, 52, 53, 109})
+	CyanBg       = string([]byte{27, 91, 57, 55, 59, 52, 54, 109})
+	Green        = string([]byte{27, 91, 51, 50, 109})
+	White        = string([]byte{27, 91, 51, 55, 109})
+	Yellow       = string([]byte{27, 91, 51, 51, 109})
+	Red          = string([]byte{27, 91, 51, 49, 109})
+	Blue         = string([]byte{27, 91, 51, 52, 109})
+	Magenta      = string([]byte{27, 91, 51, 53, 109})
+	Cyan         = string([]byte{27, 91, 51, 54, 109})
+	Reset        = string([]byte{27, 91, 48, 109})
+	disableColor = false
+
+	black        = string([]byte{27, 91, 57, 48, 109})
+
+)
+
 
 func init() {
     r = rand.New(rand.NewSource(time.Now().Unix()))
@@ -50,20 +70,16 @@ func ExecCDCmd(workdir string, command string, arg ...string) (_ string, err err
 
 	errs:=cmd.Run()
 	if errs != nil {
-		fmt.Println("=======error==========")
-		fmt.Println("cd cmd run error", errs)
-		fmt.Println("work dir :", workdir)
-		fmt.Println("cmd      :", cmd)
-		fmt.Println("=======error==========")
+		fmt.Println(Red, "--->  cd cmd run error", errs, Reset)
+		fmt.Println(Red, "--->  work dir :", workdir, Reset)
+		fmt.Println(Red, "--->  cmd      :", cmd, Reset)
 		return "", errs
 	}
 	a:= out.Bytes();
-	fmt.Println("=======success==========")
-	fmt.Println("work dir :", workdir)
-	fmt.Println("cmd      :", cmd)
-	fmt.Println("res      :", string(a))
-	fmt.Println("=======success=========")
-	
+	fmt.Println(Green, "--->  work dir :", workdir, Reset)
+	fmt.Println(Green, "--->  cmd      :", cmd, Reset)
+	fmt.Println(Green, "--->  res      :", string(a), Reset)
+
 
 	return string(a), nil
 }
@@ -82,21 +98,16 @@ func ExecCICmd( workdir string, command string, arg ...string) (_ string, err er
 	
 	errs:=cmd.Run()
 
-
 	if errs != nil {
-		fmt.Println("=======error==========")
-		fmt.Println("ci cmd run error", errs)
-		fmt.Println("work dir :", workdir)
-		fmt.Println("cmd      :", cmd)
-		fmt.Println("========error=========")
+		fmt.Println(Red, "--->  ci cmd run error", errs, Reset)
+		fmt.Println(Red, "--->  work dir :", workdir, Reset)
+		fmt.Println(Red, "--->  cmd      :", cmd, Reset)
 		return "", errs
 	}
 	a:= out.Bytes();
-	fmt.Println("=======success==========")
-	fmt.Println("work dir :", workdir)
-	fmt.Println("cmd      :", cmd)
-	fmt.Println("res      :", string(a))
-	fmt.Println("========success=========")
+	fmt.Println(Green, "--->  work dir :", workdir, Reset)
+	fmt.Println(Green, "--->  cmd      :", cmd, Reset)
+	fmt.Println(Green, "--->  res      :", string(a), Reset)
 
 
 	return string(a), nil
@@ -116,23 +127,19 @@ func ExecCmd(name string, arg ...string) (_ string, err error) {
 
 	errs:=cmd.Run()
 	if errs != nil {
-		fmt.Println("=======error==========")
-		fmt.Println("cmd      :", cmd)
-		fmt.Println("cmd run error", errs)
-		fmt.Println("========error=========")
+		fmt.Println(Red, "--->  cmd      :", cmd)
+		fmt.Println(Red, "--->  cmd run error", errs)
 		return "", errs
 	}
 	a:= out.Bytes();
-	fmt.Println("=======success=========")
-	fmt.Println("cmd      :", cmd)
-	fmt.Println("res      :", string(a))
-	fmt.Println("=======success==========")
+	fmt.Println(Green, "--->  cmd      :", cmd, Reset)
+	fmt.Println(Green, "--->  res      :", string(a), Reset)
 	return string(a), nil
 }
 
 
 func printLine() {
-	fmt.Println("")
-	fmt.Println("")
-	fmt.Println("")
+	// fmt.Println("")
+	// fmt.Println("")
+	// fmt.Println("")
 }

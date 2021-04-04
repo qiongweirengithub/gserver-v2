@@ -29,6 +29,7 @@ var RoomSvc = func() module.Module {
 type Room struct {
 	basemodule.BaseModule
 	room *room.Room
+
 }
 
 func (self *Room) GetType() string {
@@ -62,9 +63,11 @@ func (self *Room) OnInit(app module.App, settings *conf.ModuleSettings) {
 	// 由匹配服调用，
 	self.GetServer().RegisterGO("/create_table", self.createTable)
 	
-	self.GetServer().RegisterGO("HD_jointable", self.joinTable)
+	self.GetServer().RegisterGO("HD_create_table", self.onlineCreateTable)
+
+	self.GetServer().RegisterGO("HD_join_table", self.joinTable)
 	
-	self.GetServer().RegisterGO("HD_playerdo", self.playerdo)
+	self.GetServer().RegisterGO("HD_player_action", self.playerdo)
 
 	log.Info("%v模块初始化完成, room id: %v", self.GetType(), roomid)
 }
@@ -105,6 +108,35 @@ func (self *Room) createTable(module module.RPCModule, tableId string) (room.Bas
 	return table, nil
 }
 
+
+/**
+*  加入table
+*/
+func (self *Room) onlineCreateTable(session gate.Session, msg map[string]interface{}) (string, error) {
+	tableId := msg["table_id"].(string)
+	log.Info("creating new table %v", tableId)
+	table := self.room.GetTable(tableId)
+	if table != nil {
+		return "操作失败", errors.New("房间id存在")
+	}
+	
+	table = NewTable(
+		self,
+		room.TableId(tableId),
+		room.Router(func(TableId string) string {
+			return fmt.Sprintf("%v://%v/%v", self.GetType(), self.GetServerId(), tableId)
+		}),
+		room.DestroyCallbacks(func(table room.BaseTable) error {
+			log.Info("回收了房间: %v", table.TableId())
+			_ = self.room.DestroyTable(table.TableId())
+			return nil
+		}),
+	)
+
+	return tableId, nil
+}
+
+
 /**
 *  加入table
 */
@@ -119,6 +151,7 @@ func (self *Room) joinTable(session gate.Session, msg map[string]interface{}) (s
 	if erro != nil {
 		return "", erro
 	}
+
 	return tableId, nil
 }
 
@@ -129,14 +162,18 @@ func (self *Room) joinTable(session gate.Session, msg map[string]interface{}) (s
 func (self *Room) playerdo(session gate.Session, msg map[string]interface{}) (r string, err error) {
 	table_id := msg["table_id"].(string)
 	action := msg["action"].(string)
+	name := msg["action"].(string)
 	table := self.room.GetTable(table_id)
 	if table == nil {
 		return "操作失败", errors.New("房间不存在")
 	}
+
 	erro := table.PutQueue(action, session, msg)
 	if erro != nil {
 		return "action fail", erro
 	}
-	return "action success", nil
+
+	conformMsg :=  fmt.Sprintf("welcome to %v:%v", name, action);
+	return conformMsg, nil
 }
 

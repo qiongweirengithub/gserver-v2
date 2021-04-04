@@ -113,10 +113,6 @@ func runCmdAndPrint(cmd *exec.Cmd, wd string) (string, error) {
 		fmt.Print(Green , line, Reset)
 	}
 
-	
-
-	
-
 }
 
 

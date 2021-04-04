@@ -39,10 +39,17 @@ func NewWork(manager *Manager) *Work {
 		fmt.Println(err.Error())
 	}
 
-	this.On("/gate/send/test", func(client MQTT.Client, msg MQTT.Message) {
+	this.On("/room_table/new_event", func(client MQTT.Client, msg MQTT.Message) {
 		//服务端主动下发玩家加入事件
 		fmt.Println(msg.Topic(), string(msg.Payload()))
 	})
+
+
+	this.On("room_table/event_conform", func(client MQTT.Client, msg MQTT.Message) {
+		//服务端主动下发玩家加入事件
+		fmt.Println(msg.Topic(), string(msg.Payload()))
+	})
+
 	return this
 }
 
@@ -64,7 +71,11 @@ func (this *Work) UnmarshalResult(payload []byte) map[string]interface{} {
 func (this *Work) RunWorker(t task.Task) {
 	// msg, err := this.Request("helloworld@helloworld001/HD_say", []byte(`i want test module id`))
 	fmt.Println("sending request")
-	msg, err := this.Request("battleroomsvc@12352/HD_jointable", []byte(`{"table_id":"testtable01"}`))
+
+	msg, err := this.Request("battleroomsvc@12352/HD_create_table", []byte(`{"table_id":"testtable01"}`))
+
+	msg, err = this.Request("battleroomsvc@12352/HD_join_table", []byte(`{"table_id":"testtable01"}`))
+
 	// msg, err := this.Request("battleroomsvc/table_create", []byte(`{"tableId":"testtable01"}`))
 
 	if err != nil {

@@ -11,6 +11,11 @@ import (
 	"time"
 )
 
+
+type MsgProcessor struct {
+
+}
+
 type GTable struct {
 	room.QTable
 	module  module.RPCModule
@@ -34,9 +39,15 @@ func (this *GTable) OnCreate() {
 /**
 每帧都会调用
 */
-func (this *GTable) Update(ds time.Duration) {
+func (this *GTable) Update(ds time.Duration) {}
 
+/**
+*   处理每帧消息
+*/
+func (GTable) Receive(msg *room.QueueMsg, index int) {
+	log.Info("帧同步消息:", msg)
 }
+
 
 func NewTable(module module.RPCModule, opts ...room.Option) *GTable {
 	this := &GTable{
@@ -52,12 +63,15 @@ func NewTable(module module.RPCModule, opts ...room.Option) *GTable {
 	opts = append(opts, room.SetRecoverHandle(func(msg *room.QueueMsg, err error) {
 		log.Error("Recover %v Error: %v", msg.Func, err.Error())
 	}))
+
+	msgProcessor := this
+	//设置每帧消息处理器
+	this.QueueTable.SetReceive(msgProcessor)
+
 	opts = append(opts, room.SetErrorHandle(func(msg *room.QueueMsg, err error) {
 		log.Error("Error %v Error: %v", msg.Func, err.Error())
 	}))
 	this.OnInit(this, opts...)
-	this.Register("/room/say", this.doSay)
-	this.Register("/room/join", this.doJoin)
 	return this
 }
 
@@ -71,11 +85,16 @@ func (this *GTable) doSay(session gate.Session, msg map[string]interface{}) (err
 	return nil
 }
 
-func (this *GTable) doJoin(session gate.Session, msg map[string]interface{}) (err error) {
-	player := &room.BasePlayerImp{}
-	player.Bind(session)
+
+
+/**
+* 用户新的动作
+*/
+func (this *GTable) doAction(session gate.Session, msg map[string]interface{}) (err error) {
+	player := this.FindPlayer(session)
 	player.OnRequest(session)
-	this.players[session.GetSessionId()] = player
-	_ = this.NotifyCallBackMsg("/room/join", []byte(fmt.Sprintf("welcome to %v", msg["name"])))
+	name := msg["name"]
+	action := msg["action"]
+	_ = this.NotifyCallBackMsg("/room_table/event_conform", []byte(fmt.Sprintf("welcome to %v:%v", name, action)))
 	return nil
 }

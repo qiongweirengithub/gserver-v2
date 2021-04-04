@@ -8,6 +8,8 @@ import (
 	"math/rand"
 	"time"
 	"io/ioutil"
+	"bufio"
+	"io"
 )
 
 
@@ -58,88 +60,89 @@ func RandString(len int) string {
 }
 
 func ExecCDCmd(workdir string, command string, arg ...string) (_ string, err error) {
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	defer printLine()
-
 	cmd := exec.Command(command, arg...)
-	cmd.Dir = workdir
-
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-
-	errs:=cmd.Run()
-	if errs != nil {
-		fmt.Println(Red, "--->  cd cmd run error", errs, Reset)
-		fmt.Println(Red, "--->  work dir :", workdir, Reset)
-		fmt.Println(Red, "--->  cmd      :", cmd, Reset)
-		return "", errs
-	}
-	a:= out.Bytes();
-	fmt.Println(Green, "--->  work dir :", workdir, Reset)
-	fmt.Println(Green, "--->  cmd      :", cmd, Reset)
-	fmt.Println(Green, "--->  res      :", string(a), Reset)
-
-
-	return string(a), nil
+	return runCmdAndPrint(cmd, workdir)
 }
 
 
 func ExecCICmd( workdir string, command string, arg ...string) (_ string, err error) {
-	var out bytes.Buffer
-	var stderr bytes.Buffer
 	cmd := exec.Command(command, arg...)
-	cmd.Dir = workdir 
-
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-	
-	defer printLine()
-	
-	errs:=cmd.Run()
-
-	if errs != nil {
-		fmt.Println(Red, "--->  ci cmd run error", errs, Reset)
-		fmt.Println(Red, "--->  work dir :", workdir, Reset)
-		fmt.Println(Red, "--->  cmd      :", cmd, Reset)
-		return "", errs
-	}
-	a:= out.Bytes();
-	fmt.Println(Green, "--->  work dir :", workdir, Reset)
-	fmt.Println(Green, "--->  cmd      :", cmd, Reset)
-	fmt.Println(Green, "--->  res      :", string(a), Reset)
-
-
-	return string(a), nil
+	return runCmdAndPrint(cmd, workdir)
 }
 
 
 
 func ExecCmd(name string, arg ...string) (_ string, err error) {
 
-	var out bytes.Buffer
-	var stderr bytes.Buffer
 	cmd := exec.Command(name, arg...)
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-
-	defer printLine()
-
-	errs:=cmd.Run()
-	if errs != nil {
-		fmt.Println(Red, "--->  cmd      :", cmd)
-		fmt.Println(Red, "--->  cmd run error", errs)
-		return "", errs
-	}
-	a:= out.Bytes();
-	fmt.Println(Green, "--->  cmd      :", cmd, Reset)
-	fmt.Println(Green, "--->  res      :", string(a), Reset)
-	return string(a), nil
+	return runCmdAndPrint(cmd, "")
 }
 
 
-func printLine() {
-	// fmt.Println("")
-	// fmt.Println("")
-	// fmt.Println("")
+func runCmdAndPrint(cmd *exec.Cmd, wd string) (string, error) {
+
+	fmt.Println(Blue, "WD: ", wd, Reset)
+	fmt.Println(Blue, "CMD: ", cmd, Reset)
+
+	if wd != "" {
+		cmd.Dir = wd 
+	}
+	stdout, err := cmd.StdoutPipe()
+
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	
+	cmd.Start()
+
+	reader := bufio.NewReader(stdout)
+
+	//实时循环读取输出流中的一行内容
+	for {
+		line, err2 := reader.ReadString('\n')
+		
+		if err2 != nil && io.EOF != err2 {
+			return "error", err2
+		}
+
+		if io.EOF == err2 {
+			return "success", nil
+		}
+
+		fmt.Print(Green , line, Reset)
+	}
+
+	
+
+	return "success", nil
+
+}
+
+
+
+func runCmdAndPrintDepracated(cmd *exec.Cmd, workdir string) (string, error) {
+
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	if workdir != "" {
+		cmd.Dir = workdir 
+	}
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	
+	errs:=cmd.Run()
+	if errs != nil {
+		fmt.Println(Red, "---> work dir :", workdir, Reset)
+		fmt.Println(Red, "---> cmd      :", cmd)
+		fmt.Println(Red, "---> cmd run error", errs)
+		return "", errs
+	}
+	a:= out.Bytes();
+	fmt.Println(Red, "---> work dir :", workdir, Reset)
+	fmt.Println(Green, "---> cmd :", cmd, Reset)
+	fmt.Println(Green, "---> res :", string(a), Reset)
+
+	return string("a"), nil
+
 }

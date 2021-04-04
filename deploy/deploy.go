@@ -216,7 +216,7 @@ func main() {
 
 	if *service == "g-battleroomsvc" {
 
-		fmt.Println(application.MagentaBg, service, "is ready to deploy", *service,  application.Reset)
+		fmt.Println(application.MagentaBg, *service, "is ready to deploy", *service,  application.Reset)
 
 		containerId, serviceId, err := application.DeployingGBattleRoomsvc(ci_dir, *service, *roomid)
 		if err != nil {

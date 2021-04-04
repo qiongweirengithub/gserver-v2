@@ -115,7 +115,7 @@ func runCmdAndPrint(cmd *exec.Cmd, wd string) (string, error) {
 
 	
 
-	return "success", nil
+	
 
 }
 

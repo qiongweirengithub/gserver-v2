@@ -117,22 +117,13 @@ func (self *Room) onlineCreateTable(session gate.Session, msg map[string]interfa
 	log.Info("creating new table %v", tableId)
 	table := self.room.GetTable(tableId)
 	if table != nil {
-		return "操作失败", errors.New("房间id存在")
+		return "", errors.New("房间id存在")
 	}
-	
-	table = NewTable(
-		self,
-		room.TableId(tableId),
-		room.Router(func(TableId string) string {
-			return fmt.Sprintf("%v://%v/%v", self.GetType(), self.GetServerId(), tableId)
-		}),
-		room.DestroyCallbacks(func(table room.BaseTable) error {
-			log.Info("回收了房间: %v", table.TableId())
-			_ = self.room.DestroyTable(table.TableId())
-			return nil
-		}),
-	)
-
+	var err error
+	table, err = self.room.CreateById(self, tableId, self.createTable)
+	if err != nil {
+		return "", errors.New("创建房间失败")
+	}
 	return tableId, nil
 }
 

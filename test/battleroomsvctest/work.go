@@ -72,9 +72,9 @@ func (this *Work) RunWorker(t task.Task) {
 	// msg, err := this.Request("helloworld@helloworld001/HD_say", []byte(`i want test module id`))
 	fmt.Println("sending request")
 
-	msg, err := this.Request("battleroomsvc@12360/HD_create_table", []byte(`{"table_id":"testtable01"}`))
+	msg, err := this.Request("battleroomsvc@12361/HD_create_table", []byte(`{"table_id":"testtable01"}`))
 
-	msg, err = this.Request("battleroomsvc@12360/HD_join_table", []byte(`{"table_id":"testtable01"}`))
+	msg, err = this.Request("battleroomsvc@12361/HD_join_table", []byte(`{"table_id":"testtable01"}`))
 
 	// msg, err := this.Request("battleroomsvc/table_create", []byte(`{"tableId":"testtable01"}`))
 

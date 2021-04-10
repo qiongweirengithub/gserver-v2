@@ -25,7 +25,8 @@ var (
 	roomid *string
 
 	// project_url string = "git@github.com:qiongweirengithub/gserver-v2.git"
-	project_url string = "/home/qiongwei/mycode/goprj/gserver.v3/"
+	project_url string = "git@git.zhlh6.cn:qiongweirengithub/gserver-v2.git"
+	// project_url string = "/home/qiongwei/mycode/goprj/gserver.v3/"
 
 ) 
 
@@ -132,8 +133,8 @@ func main() {
 	application.ExecCICmd(ci_dir, "git", "clone", project_url, "--depth=1")
 	
 	// 切换到git分支
-	// ci_dir = ci_dir + "/gserver-v2"
-	ci_dir = ci_dir + "/gserver.v3"
+	ci_dir = ci_dir + "/gserver-v2"
+	// ci_dir = ci_dir + "/gserver.v3"  // 本地
 	_, err = application.ExecCICmd(ci_dir, "git", "checkout", "main-v3.0")
 	if err != nil {
 		fmt.Println(application.Red, "branch checkout fail: ", *container_id, err, application.Reset)

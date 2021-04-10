@@ -130,7 +130,7 @@ func main() {
 
 	// 拉取项目
 	fmt.Println(application.MagentaBg, "loading project", project_url, application.Reset)
-	application.ExecCICmd(ci_dir, "git", "clone", project_url, "--depth=1")
+	application.ExecCICmd(ci_dir, "git", "clone", project_url)
 	
 	// 切换到git分支
 	ci_dir = ci_dir + "/gserver-v2"

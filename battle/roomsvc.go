@@ -21,36 +21,40 @@ import (
 
 )
 
-var RoomSvc = func() module.Module {
-	this := new(Room)
+var GRoomSvc = func() module.Module {
+	this := new(GRoom)
 	return this
 }
 
-type Room struct {
+type GRoom struct {
 	basemodule.BaseModule
 	room *room.Room
 
 }
 
-func (self *Room) GetType() string {
+func (self *GRoom) GetType() string {
 	//很关键,需要与配置文件中的Module配置对应
 	return "battleroomsvc"
 }
-func (self *Room) Version() string {
+func (self *GRoom) Version() string {
 	//可以在监控时了解代码版本
 	return "1.0.0"
 }
-func (self *Room) OnAppConfigurationLoaded(app module.App) {
+func (self *GRoom) OnAppConfigurationLoaded(app module.App) {
 	//当App初始化时调用，这个接口不管这个模块是否在这个进程运行都会调用
 	self.BaseModule.OnAppConfigurationLoaded(app)
 }
-func (self *Room) OnInit(app module.App, settings *conf.ModuleSettings) {
+func (self *GRoom) OnInit(app module.App, settings *conf.ModuleSettings) {
 
-	log.Info("initing %v", "battle Room")
+	log.Info("initing %v", "battle GRoom")
 	// 启动后自动把自己的信息同步到数据库
 
 	// 固定id,可定向访问
 	var roomid string = settings.Settings["room_id"].(string)
+	if  len(roomid) == 0 {
+		log.Error("%v模块初始化失败, roomid为空", self.GetType())
+		return
+	}
 	log.Info("roomid %v", roomid)
 	self.BaseModule.OnInit(self, app, settings,
 		server.RegisterInterval(15*time.Second),
@@ -72,13 +76,13 @@ func (self *Room) OnInit(app module.App, settings *conf.ModuleSettings) {
 	log.Info("%v模块初始化完成, room id: %v", self.GetType(), roomid)
 }
 
-func (self *Room) Run(closeSig chan bool) {
+func (self *GRoom) Run(closeSig chan bool) {
 	log.Info("%v模块运行中...", self.GetType())
 	<-closeSig
 	log.Info("%v模块已停止...", self.GetType())
 }
 
-func (self *Room) OnDestroy() {
+func (self *GRoom) OnDestroy() {
 	//一定继承
 	self.BaseModule.OnDestroy()
 	log.Info("%v模块已回收...", self.GetType())
@@ -88,7 +92,7 @@ func (self *Room) OnDestroy() {
 /**
 *  创建table
 */
-func (self *Room) createTable(module module.RPCModule, tableId string) (room.BaseTable, error) {
+func (self *GRoom) createTable(module module.RPCModule, tableId string) (room.BaseTable, error) {
 
 	log.Info("creating table %v", tableId)
 	table := NewTable(
@@ -112,7 +116,7 @@ func (self *Room) createTable(module module.RPCModule, tableId string) (room.Bas
 /**
 *  加入table
 */
-func (self *Room) onlineCreateTable(session gate.Session, msg map[string]interface{}) (string, error) {
+func (self *GRoom) onlineCreateTable(session gate.Session, msg map[string]interface{}) (string, error) {
 	tableId := msg["table_id"].(string)
 	log.Info("creating new table %v", tableId)
 	table := self.room.GetTable(tableId)
@@ -131,7 +135,7 @@ func (self *Room) onlineCreateTable(session gate.Session, msg map[string]interfa
 /**
 *  加入table
 */
-func (self *Room) joinTable(session gate.Session, msg map[string]interface{}) (string, error) {
+func (self *GRoom) joinTable(session gate.Session, msg map[string]interface{}) (string, error) {
 	tableId := msg["table_id"].(string)
 	log.Info("new player joining table %v", tableId)
 	table := self.room.GetTable(tableId)
@@ -150,7 +154,7 @@ func (self *Room) joinTable(session gate.Session, msg map[string]interface{}) (s
 /**
 *  玩家行为
 */
-func (self *Room) playerdo(session gate.Session, msg map[string]interface{}) (r string, err error) {
+func (self *GRoom) playerdo(session gate.Session, msg map[string]interface{}) (r string, err error) {
 	table_id := msg["table_id"].(string)
 	action := msg["action"].(string)
 	name := msg["action"].(string)

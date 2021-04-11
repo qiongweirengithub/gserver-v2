@@ -11,11 +11,6 @@ import (
 	"time"
 )
 
-
-type MsgProcessor struct {
-
-}
-
 type GTable struct {
 	room.QTable
 	module  module.RPCModule
@@ -64,9 +59,9 @@ func NewTable(module module.RPCModule, opts ...room.Option) *GTable {
 		log.Error("Recover %v Error: %v", msg.Func, err.Error())
 	}))
 
-	msgProcessor := this
+	frameUpdateReceiver := this
 	//设置每帧消息处理器
-	this.QueueTable.SetReceive(msgProcessor)
+	this.QueueTable.SetReceive(frameUpdateReceiver)
 
 	opts = append(opts, room.SetErrorHandle(func(msg *room.QueueMsg, err error) {
 		log.Error("Error %v Error: %v", msg.Func, err.Error())

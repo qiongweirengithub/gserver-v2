@@ -65,7 +65,7 @@ func main() {
 		gate.ConnectionSvc(),
 
 		// 房间服务，负责管理 battle table
-		battle.RoomSvc(),
+		battle.GRoomSvc(),
 
 		// 网管信息查询
 		gate.GateService(),

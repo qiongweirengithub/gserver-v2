@@ -1,17 +1,18 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+
 	"gserver.v2/admin/dbs"
 	"gserver.v2/deploy/application"
-	"io/ioutil"
-	"os/exec"
-	"os"
-	"path/filepath"	
-	"strings"
-	"errors"
 )
 
 var (
@@ -135,11 +136,11 @@ func main() {
 	// 切换到git分支
 	ci_dir = ci_dir + "/gserver-v2"
 	// ci_dir = ci_dir + "/gserver.v3"  // 本地
-	_, err = application.ExecCICmd(ci_dir, "git", "checkout", "main-v3.0")
-	if err != nil {
-		fmt.Println(application.Red, "branch checkout fail: ", *container_id, err, application.Reset)
-		return
-	}
+	// _, err = application.ExecCICmd(ci_dir, "git", "checkout", "main-v3.0")
+	// if err != nil {
+	// 	fmt.Println(application.Red, "branch checkout fail: ", *container_id, err, application.Reset)
+	// 	return
+	// }
 	
 	// 构建程序，并生成应用文件
 	fmt.Println(application.MagentaBg, "building project", project_url, application.Reset)

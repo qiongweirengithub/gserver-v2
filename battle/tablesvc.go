@@ -42,10 +42,10 @@ func (this *GTable) Update(ds time.Duration) {}
 func (this *GTable) Receive(msg *room.QueueMsg, index int) {
 	log.Info("帧同步消息:", msg)
 	action := msg.Func
-	playermsg := msg.Params[2].(string)
+	playermsg := msg.Params[1].(string)
 	if "join" == action {
 		log.Info("new player join:", playermsg)
-		session := msg.Params[1].(gate.Session)	
+		session := msg.Params[0].(gate.Session)	
 		player := &room.BasePlayerImp{}
 		player.Bind(session)
 		player.OnRequest(session)

@@ -39,8 +39,26 @@ func (this *GTable) Update(ds time.Duration) {}
 /**
 *   处理每帧消息
 */
-func (GTable) Receive(msg *room.QueueMsg, index int) {
+func (this *GTable) Receive(msg *room.QueueMsg, index int) {
 	log.Info("帧同步消息:", msg)
+	action := msg.Func
+	playermsg := msg.Params[2].(string)
+	if "join" == action {
+		log.Info("new player join:", playermsg)
+		session := msg.Params[1].(gate.Session)	
+		player := &room.BasePlayerImp{}
+		player.Bind(session)
+		player.OnRequest(session)
+		this.players[session.GetSessionId()] = player
+	} else {
+		log.Info("unsupport action:", action)
+	}
+
+	for _,pl := range this.GetSeats() {
+		log.Info("syn to all player join:", playermsg)
+		pl.Session().Send("/gate/send/test", []byte(fmt.Sprintf("send hi to %v", action)))		
+	}
+
 }
 
 

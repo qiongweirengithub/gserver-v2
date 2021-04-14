@@ -59,6 +59,11 @@ func (this *GTable) Receive(msg *room.QueueMsg, index int) {
 		pl.Session().Send("/room_table/new_event", []byte(fmt.Sprintf("send hi to %v", action)))		
 	}
 
+	for _,pl := range this.GetSeats() {
+		log.Info("syn to all player join:", playermsg)
+		pl.Session().Send("/room_table/new_event", []byte(fmt.Sprintf("send hi to %v", action)))		
+	}
+
 }
 
 

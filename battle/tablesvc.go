@@ -1,14 +1,16 @@
 package battle
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
+	"time"
+
 	"github.com/liangdas/mqant-modules/room"
 	"github.com/liangdas/mqant/gate"
 	"github.com/liangdas/mqant/log"
 	"github.com/liangdas/mqant/module"
-	"reflect"
-	"time"
 )
 
 type GTable struct {
@@ -37,31 +39,51 @@ func (this *GTable) OnCreate() {
 func (this *GTable) Update(ds time.Duration) {}
 
 /**
-*   处理每帧消息
-*/
+ * 处理每帧消息
+ * 
+ */
 func (this *GTable) Receive(msg *room.QueueMsg, index int) {
 	log.Info("帧同步消息:", msg)
 	action := msg.Func
-	playermsg := msg.Params[1]
+	var playermsg map[string]interface{} = msg.Params[1].(map[string]interface{})
+	session := msg.Params[0].(gate.Session)	
+	player := this.GetSeats()[session.GetSessionId()];
+
 	if "join" == action {
+		if len(this.GetSeats()) >= 2 {
+			return
+		}
+		if _, ok := this.GetSeats()[session.GetSessionId()]; ok {
+			return
+		}
 		log.Info("new player join:", playermsg)
-		session := msg.Params[0].(gate.Session)	
-		player := &room.BasePlayerImp{}
+		player = &room.BasePlayerImp{}
 		player.Bind(session)
-		player.OnRequest(session)
-		this.players[session.GetSessionId()] = player
+		this.GetSeats()[session.GetSessionId()] = player
+	} else if "exit" == action {
+		delete(this.GetSeats(), session.GetSessionId())
 	} else {
 		log.Info("unsupport action:", action)
 	}
 
-	for _,pl := range this.GetSeats() {
-		log.Info("syn to all player join:", playermsg)
-		pl.Session().Send("/room_table/new_event", []byte(fmt.Sprintf("send hi to %v", action)))		
+	if player == nil {
+		log.Error("player is nul", session.GetSessionId())
+		return
+	}
+	
+	// 更新session
+    player.OnRequest(session)
+
+	// 通知所有人
+	data, err := json.Marshal(playermsg)
+	if err != nil {
+		log.Error("msg serilized fail", playermsg)
+		return
 	}
 
 	for _,pl := range this.GetSeats() {
-		log.Info("syn to all player join:", playermsg)
-		pl.Session().Send("/room_table/new_event", []byte(fmt.Sprintf("send hi to %v", action)))		
+		log.Info("syn to all player event:", playermsg)
+		pl.Session().Send("/room_table/new_event", []byte(string(data)))		
 	}
 
 }

@@ -157,7 +157,7 @@ func (self *GRoom) joinTable(session gate.Session, msg map[string]interface{}) (
 func (self *GRoom) playerdo(session gate.Session, msg map[string]interface{}) (r string, err error) {
 	table_id := msg["table_id"].(string)
 	action := msg["action"].(string)
-	name := msg["action"].(string)
+	name := msg["name"].(string)
 	table := self.room.GetTable(table_id)
 	if table == nil {
 		return "操作失败", errors.New("房间不存在")

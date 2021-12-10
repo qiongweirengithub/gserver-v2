@@ -51,6 +51,7 @@ func (this *GTable) Receive(msg *room.QueueMsg, index int) {
 
 	if "join" == action {
 		if len(this.GetSeats()) >= 2 {
+			
 			return
 		}
 		if _, ok := this.GetSeats()[session.GetSessionId()]; ok {
